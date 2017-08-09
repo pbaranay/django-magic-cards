@@ -39,6 +39,9 @@ install: pip install tox-travis
 # command to run tests using coverage, e.g. python setup.py test
 script: tox
 
-after_success:
+before_install:
   - pip install codecov
-  - codecov -e TOX_ENV,DJANGO
+
+after_success:
+  - tox -e coverage-report
+  - codecov

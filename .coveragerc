@@ -1,5 +1,6 @@
 [run]
 branch = true
+source = magic_cards
 
 [report]
 omit =
@@ -9,3 +10,9 @@ omit =
 show_missing = True
 exclude_lines =
     raise NotImplementedError
+
+[paths]
+source =
+   src/magic_cards
+   .tox/*/lib/python*/site-packages/magic_cards
+   .tox/pypy*/site-packages/magic_cards
