@@ -37,7 +37,7 @@ Add the app to your `INSTALLED_APPS`:
 
 Add Django Magic Cards' tables to your the database::
 
-    ./manage.py magic_cards
+    ./manage.py migrate magic_cards
 
 Populate the card database::
 
