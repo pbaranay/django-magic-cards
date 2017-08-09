@@ -1,0 +1,8 @@
+django-light-enums==0.1.6
+requests==2.18.2
+six==1.10.0
+coverage==4.3.4
+mock>=1.0.1
+flake8>=2.1.0
+tox>=1.7.0
+codecov>=2.0.0

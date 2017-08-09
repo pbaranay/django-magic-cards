@@ -1,0 +1,44 @@
+# Config file for automatic testing at travis-ci.org
+
+language: python
+
+python:
+    - "2.7"
+    - "3.4"
+    - "3.5"
+
+sudo: false
+
+env:
+    - DJANGO=1.8
+    - DJANGO=1.9
+    - DJANGO=1.10
+    - DJANGO=1.11
+    - DJANGO=master
+
+matrix:
+    fast_finish: true
+    include:
+      - python: "3.6"
+        env: DJANGO=master
+      - python: "3.6"
+        env: DJANGO=1.11
+      - python: "3.3"
+        env: DJANGO=1.8
+    exclude:
+      - python: "2.7"
+        env: DJANGO=master
+      - python: "3.4"
+        env: DJANGO=master
+
+    allow_failures:
+      - env: DJANGO=master
+
+install: pip install tox-travis
+
+# command to run tests using coverage, e.g. python setup.py test
+script: tox
+
+after_success:
+  - pip install codecov
+  - codecov -e TOX_ENV,DJANGO
