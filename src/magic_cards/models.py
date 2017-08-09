@@ -10,7 +10,7 @@ class NameMixin(object):
 
 
 class Card(NameMixin, models.Model):
-    name = models.CharField(max_length=127, unique=True)
+    name = models.CharField(max_length=255, unique=True)
     mana_cost = models.CharField(max_length=63, blank=True)
 
     supertypes = models.ManyToManyField('CardSupertype')
