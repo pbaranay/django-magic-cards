@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
             name='Card',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=127, unique=True)),
+                ('name', models.CharField(max_length=255, unique=True)),
                 ('mana_cost', models.CharField(blank=True, max_length=63)),
                 ('text', models.TextField(blank=True)),
                 ('power', models.CharField(blank=True, max_length=7)),
