@@ -151,6 +151,17 @@ def parse_data(sets_data, set_codes):
         if printings_to_create:
             Printing.objects.bulk_create(printings_to_create)
 
+    # Remove extra Printings caused by data that is duplicated on MTGJSON.
+    # https://github.com/mtgjson/mtgjson/issues/388
+    if set_codes is Everything or 'BOK' in set_codes:
+        bugged_card_names = ['Jaraku the Interloper', 'Scarmaker']
+        for name in bugged_card_names:
+            extra_printings = Printing.objects.filter(
+                set__code='BOK', card__name=name)[1:].values_list(
+                    'pk', flat=True)
+            Printing.objects.filter(pk__in=list(extra_printings)).delete()
+
+
 @transaction.atomic
 def import_cards(set_codes=Everything):
     sets_data = fetch_data()

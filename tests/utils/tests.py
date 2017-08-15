@@ -85,6 +85,25 @@ class ImportScriptTests(ImportTestBase, TestCase):
         self.assertEqual(Card.objects.count(), 287)
         self.assertEqual(Printing.objects.count(), 302)
 
+    def test_import_betrayers(self):
+        """
+        Data integrity issues from a bug in MTGJSON are cleaned up by the import process.
+        """
+        import_cards(["BOK"])
+
+        self.assertEqual(Set.objects.count(), 1)
+        betrayers = Set.objects.first()
+        self.assertEqual(betrayers.name, "Betrayers of Kamigawa")
+        self.assertEqual(betrayers.code, "BOK")
+
+        self.assertEqual(Card.objects.count(), 170)
+        #   170 Distinctly-named cards
+
+        self.assertEqual(Printing.objects.count(), 170)
+        #   170 Number of cards
+        # +   0 Basic lands
+
+        self.check_common_set_constraints()
 
 class ImportManagementCommandTests(ImportTestBase, TestCase):
 
