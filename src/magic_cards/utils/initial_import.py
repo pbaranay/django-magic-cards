@@ -49,11 +49,21 @@ def parse_rarity(string):
         return Printing.Rarity.SPECIAL
 
 
+class ModelCache(dict):
+
+    def get_or_create(self, model, field, value):
+        result = self[model].get(value)
+        if not result:
+            result = model.objects.create(**{field: value})
+            self[model][value] = result
+        return result
+
+
 def parse_data(sets_data, set_codes):
     # Load supertypes, types, and subtypes into memory
-    supertype_objs = {t.name: t for t in CardSupertype.objects.all()}
-    type_objs = {t.name: t for t in CardType.objects.all()}
-    subtype_objs = {t.name: t for t in CardSubtype.objects.all()}
+    cache = ModelCache()
+    for model in [CardSupertype, CardType, CardSubtype]:
+        cache[model] = {obj.name: obj for obj in model.objects.all()}
 
     # Process the data set-by-set
     for code, data in sets_data.items():
@@ -90,25 +100,13 @@ def parse_data(sets_data, set_codes):
             types = card_data['types']
             subtypes = card_data.get('subtypes', [])
             for supertype_name in supertypes:
-                if supertype_name in supertype_objs:
-                    supertype = supertype_objs[supertype_name]
-                else:
-                    supertype = CardSupertype.objects.create(name=supertype_name)
-                    supertype_objs[supertype_name] = supertype
+                supertype = cache.get_or_create(CardSupertype, 'name', supertype_name)
                 card.supertypes.add(supertype)
             for type_name in types:
-                if type_name in type_objs:
-                    card_type = type_objs[type_name]
-                else:
-                    card_type = CardType.objects.create(name=type_name)
-                    type_objs[type_name] = card_type
+                card_type = cache.get_or_create(CardType, 'name', type_name)
                 card.types.add(card_type)
             for subtype_name in subtypes:
-                if subtype_name in subtype_objs:
-                    subtype = subtype_objs[subtype_name]
-                else:
-                    subtype = CardSubtype.objects.create(name=subtype_name)
-                    subtype_objs[subtype_name] = subtype
+                subtype = cache.get_or_create(CardSubtype, 'name', subtype_name)
                 card.subtypes.add(subtype)
 
             # Printing info
