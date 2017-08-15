@@ -52,11 +52,17 @@ def parse_rarity(string):
 class ModelCache(dict):
 
     def get_or_create(self, model, field, value):
+        """
+        Returns a tuple of (object, created), where created is a boolean specifying whether an
+        object was created.
+        """
         result = self[model].get(value)
+        created = False
         if not result:
             result = model.objects.create(**{field: value})
             self[model][value] = result
-        return result
+            created = True
+        return result, created
 
 
 def parse_data(sets_data, set_codes):
@@ -100,13 +106,13 @@ def parse_data(sets_data, set_codes):
             types = card_data['types']
             subtypes = card_data.get('subtypes', [])
             for supertype_name in supertypes:
-                supertype = cache.get_or_create(CardSupertype, 'name', supertype_name)
+                supertype, _ = cache.get_or_create(CardSupertype, 'name', supertype_name)
                 card.supertypes.add(supertype)
             for type_name in types:
-                card_type = cache.get_or_create(CardType, 'name', type_name)
+                card_type, _ = cache.get_or_create(CardType, 'name', type_name)
                 card.types.add(card_type)
             for subtype_name in subtypes:
-                subtype = cache.get_or_create(CardSubtype, 'name', subtype_name)
+                subtype, _ = cache.get_or_create(CardSubtype, 'name', subtype_name)
                 card.subtypes.add(subtype)
 
             # Printing info
