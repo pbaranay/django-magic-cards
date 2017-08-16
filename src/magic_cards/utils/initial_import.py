@@ -74,6 +74,11 @@ def parse_data(sets_data, set_codes):
     cache = ModelCache()
     for model in [CardSupertype, CardType, CardSubtype]:
         cache[model] = {obj.name: obj for obj in model.objects.all()}
+    # Load relevant sets into memory
+    if set_codes is Everything:
+        cache[Set] = {obj.code: obj for obj in Set.objects.all()}
+    else:
+        cache[Set] = {obj.code: obj for obj in Set.objects.filter(code__in=set_codes)}
 
     # Process the data set-by-set
     for code, data in sets_data.items():
@@ -83,7 +88,7 @@ def parse_data(sets_data, set_codes):
             continue
 
         # Create the set
-        magic_set, _ = Set.objects.get_or_create(code=code, name=data['name'])
+        magic_set, set_created = cache.get_or_create(Set, 'code', code, name=data['name'])
 
         # Create cards
         all_cards_data = data['cards']
