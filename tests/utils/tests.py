@@ -16,7 +16,8 @@ class ImportTestBase:
         # Only the basic lands should have multiple printings.
         multiple_printings = Card.objects.annotate(count=Count('printings')).filter(count__gte=2)
         basic_lands = {'Forest', 'Island', 'Mountain', 'Plains', 'Swamp'}
-        self.assertQuerysetEqual(multiple_printings, basic_lands, ordered=False, transform=lambda x: x.name)
+        if multiple_printings:
+            self.assertQuerysetEqual(multiple_printings, basic_lands, ordered=False, transform=lambda x: x.name)
 
         # Every printing has a rarity.
         self.assertFalse(Printing.objects.filter(rarity__isnull=True))
@@ -34,7 +35,7 @@ class ImportScriptTests(ImportTestBase, TestCase):
 
         self.assertEqual(Set.objects.count(), 212)
         self.assertEqual(Card.objects.count(), 17422)
-        self.assertEqual(Printing.objects.count(), 33840)
+        self.assertEqual(Printing.objects.count(), 33860)
 
     def test_import_single_set(self):
         import_cards(["SOM"])
@@ -85,6 +86,25 @@ class ImportScriptTests(ImportTestBase, TestCase):
         self.assertEqual(Card.objects.count(), 287)
         self.assertEqual(Printing.objects.count(), 302)
 
+    def test_import_betrayers(self):
+        """
+        Data integrity issues from a bug in MTGJSON are cleaned up by the import process.
+        """
+        import_cards(["BOK"])
+
+        self.assertEqual(Set.objects.count(), 1)
+        betrayers = Set.objects.first()
+        self.assertEqual(betrayers.name, "Betrayers of Kamigawa")
+        self.assertEqual(betrayers.code, "BOK")
+
+        self.assertEqual(Card.objects.count(), 170)
+        #   170 Distinctly-named cards
+
+        self.assertEqual(Printing.objects.count(), 170)
+        #   170 Number of cards
+        # +   0 Basic lands
+
+        self.check_common_set_constraints()
 
 class ImportManagementCommandTests(ImportTestBase, TestCase):
 

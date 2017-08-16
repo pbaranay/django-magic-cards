@@ -49,7 +49,36 @@ def parse_rarity(string):
         return Printing.Rarity.SPECIAL
 
 
+class ModelCache(dict):
+    def get_or_create(self, model, field, value, **kwargs):
+        """
+        Retrieves object of class `model` with lookup key `value` from the cache. If not found,
+        creates the object based on `field=value` and any other `kwargs`.
+
+        Returns a tuple of `(object, created)`, where `created` is a boolean specifying whether an
+        `object` was created.
+        """
+        result = self[model].get(value)
+        created = False
+        if not result:
+            kwargs[field] = value
+            result = model.objects.create(**kwargs)
+            self[model][value] = result
+            created = True
+        return result, created
+
+
 def parse_data(sets_data, set_codes):
+    # Load supertypes, types, and subtypes into memory
+    cache = ModelCache()
+    for model in [CardSupertype, CardType, CardSubtype]:
+        cache[model] = {obj.name: obj for obj in model.objects.all()}
+    # Load relevant sets into memory
+    if set_codes is Everything:
+        cache[Set] = {obj.code: obj for obj in Set.objects.all()}
+    else:
+        cache[Set] = {obj.code: obj for obj in Set.objects.filter(code__in=set_codes)}
+
     # Process the data set-by-set
     for code, data in sets_data.items():
 
@@ -58,7 +87,9 @@ def parse_data(sets_data, set_codes):
             continue
 
         # Create the set
-        magic_set, _ = Set.objects.get_or_create(code=code, name=data['name'])
+        magic_set, set_created = cache.get_or_create(Set, 'code', code, name=data['name'])
+
+        printings_to_create = []
 
         # Create cards
         all_cards_data = data['cards']
@@ -85,13 +116,13 @@ def parse_data(sets_data, set_codes):
             types = card_data['types']
             subtypes = card_data.get('subtypes', [])
             for supertype_name in supertypes:
-                supertype, _ = CardSupertype.objects.get_or_create(name=supertype_name)
+                supertype, _ = cache.get_or_create(CardSupertype, 'name', supertype_name)
                 card.supertypes.add(supertype)
             for type_name in types:
-                card_type, _ = CardType.objects.get_or_create(name=type_name)
+                card_type, _ = cache.get_or_create(CardType, 'name', type_name)
                 card.types.add(card_type)
             for subtype_name in subtypes:
-                subtype, _ = CardSubtype.objects.get_or_create(name=subtype_name)
+                subtype, _ = cache.get_or_create(CardSubtype, 'name', subtype_name)
                 card.subtypes.add(subtype)
 
             # Printing info
@@ -101,14 +132,34 @@ def parse_data(sets_data, set_codes):
             flavor_text = card_data.get('flavor_text', '')
             rarity = card_data['rarity']
             number = card_data.get('number', '')  # Absent on old sets
-            Printing.objects.get_or_create(
-                card=card,
-                set=magic_set,
-                rarity=parse_rarity(rarity),
-                flavor_text=flavor_text,
-                artist=artist,
-                number=number,
-                multiverse_id=multiverse_id)
+            # If the Set was just created, we don't need to check if the Printing already exists,
+            # and we can leverage bulk_create.
+            printing_kwargs = {
+                'card': card,
+                'set': magic_set,
+                'rarity': parse_rarity(rarity),
+                'flavor_text': flavor_text,
+                'artist': artist,
+                'number': number,
+                'multiverse_id': multiverse_id
+            }
+            if set_created:
+                printings_to_create.append(Printing(**printing_kwargs))
+            else:
+                Printing.objects.get_or_create(**printing_kwargs)
+
+        if printings_to_create:
+            Printing.objects.bulk_create(printings_to_create)
+
+    # Remove extra Printings caused by data that is duplicated on MTGJSON.
+    # https://github.com/mtgjson/mtgjson/issues/388
+    if set_codes is Everything or 'BOK' in set_codes:
+        bugged_card_names = ['Jaraku the Interloper', 'Scarmaker']
+        for name in bugged_card_names:
+            extra_printings = Printing.objects.filter(
+                set__code='BOK', card__name=name)[1:].values_list(
+                    'pk', flat=True)
+            Printing.objects.filter(pk__in=list(extra_printings)).delete()
 
 
 @transaction.atomic
