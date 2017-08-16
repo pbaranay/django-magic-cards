@@ -50,7 +50,6 @@ def parse_rarity(string):
 
 
 class ModelCache(dict):
-
     def get_or_create(self, model, field, value, **kwargs):
         """
         Retrieves object of class `model` with lookup key `value` from the cache. If not found,
@@ -89,6 +88,8 @@ def parse_data(sets_data, set_codes):
 
         # Create the set
         magic_set, set_created = cache.get_or_create(Set, 'code', code, name=data['name'])
+
+        printings_to_create = []
 
         # Create cards
         all_cards_data = data['cards']
@@ -131,15 +132,24 @@ def parse_data(sets_data, set_codes):
             flavor_text = card_data.get('flavor_text', '')
             rarity = card_data['rarity']
             number = card_data.get('number', '')  # Absent on old sets
-            Printing.objects.get_or_create(
-                card=card,
-                set=magic_set,
-                rarity=parse_rarity(rarity),
-                flavor_text=flavor_text,
-                artist=artist,
-                number=number,
-                multiverse_id=multiverse_id)
+            # If the Set was just created, we don't need to check if the Printing already exists,
+            # and we can leverage bulk_create.
+            printing_kwargs = {
+                'card': card,
+                'set': magic_set,
+                'rarity': parse_rarity(rarity),
+                'flavor_text': flavor_text,
+                'artist': artist,
+                'number': number,
+                'multiverse_id': multiverse_id
+            }
+            if set_created:
+                printings_to_create.append(Printing(**printing_kwargs))
+            else:
+                Printing.objects.get_or_create(**printing_kwargs)
 
+        if printings_to_create:
+            Printing.objects.bulk_create(printings_to_create)
 
 @transaction.atomic
 def import_cards(set_codes=Everything):
