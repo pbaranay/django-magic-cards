@@ -51,15 +51,19 @@ def parse_rarity(string):
 
 class ModelCache(dict):
 
-    def get_or_create(self, model, field, value):
+    def get_or_create(self, model, field, value, **kwargs):
         """
-        Returns a tuple of (object, created), where created is a boolean specifying whether an
-        object was created.
+        Retrieves object of class `model` with lookup key `value` from the cache. If not found,
+        creates the object based on `field=value` and any other `kwargs`.
+
+        Returns a tuple of `(object, created)`, where `created` is a boolean specifying whether an
+        `object` was created.
         """
         result = self[model].get(value)
         created = False
         if not result:
-            result = model.objects.create(**{field: value})
+            kwargs[field] = value
+            result = model.objects.create(**kwargs)
             self[model][value] = result
             created = True
         return result, created
