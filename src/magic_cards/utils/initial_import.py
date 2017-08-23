@@ -129,7 +129,7 @@ def parse_data(sets_data, set_codes):
             artist_name = card_data['artist']
             artist, _ = Artist.objects.get_or_create(full_name=artist_name)
             multiverse_id = card_data.get('multiverseid', None)  # Missing on certain sets
-            flavor_text = card_data.get('flavor_text', '')
+            flavor_text = card_data.get('flavor', '')
             rarity = card_data['rarity']
             number = card_data.get('number', '')  # Absent on old sets
             # If the Set was just created, we don't need to check if the Printing already exists,
