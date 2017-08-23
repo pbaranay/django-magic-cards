@@ -27,6 +27,9 @@ class ImportTestBase:
         for printing in Printing.objects.filter(rarity=Printing.Rarity.BASIC_LAND):
             self.assertIn(printing.card.name, basic_lands)
 
+        # Some printings have flavor text.
+        self.assertTrue(Printing.objects.exclude(flavor_text='').exists())
+
 
 class ImportScriptTests(ImportTestBase, TestCase):
 
