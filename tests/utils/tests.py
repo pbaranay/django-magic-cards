@@ -36,9 +36,9 @@ class ImportScriptTests(ImportTestBase, TestCase):
     def test_import_all_cards(self):
         import_cards()
 
-        self.assertEqual(Set.objects.count(), 213)
-        self.assertEqual(Card.objects.count(), 17478)
-        self.assertEqual(Printing.objects.count(), 34169)
+        self.assertEqual(Set.objects.count(), 214)
+        self.assertEqual(Card.objects.count(), 17733)
+        self.assertEqual(Printing.objects.count(), 34468)
 
     def test_import_single_set(self):
         import_cards(["SOM"])

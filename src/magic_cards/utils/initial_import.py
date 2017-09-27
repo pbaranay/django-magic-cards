@@ -105,12 +105,14 @@ def parse_data(sets_data, set_codes):
             text = card_data.get('text', '')
             power = card_data.get('power', '')
             toughness = card_data.get('toughness', '')
+            loyalty = card_data.get('loyalty', None)
             card, _ = Card.objects.get_or_create(
                 name=name, defaults={
                     'mana_cost': mana_cost,
                     'text': text,
                     'power': power,
                     'toughness': toughness,
+                    'loyalty': loyalty,
                 })
             supertypes = card_data.get('supertypes', [])
             types = card_data['types']

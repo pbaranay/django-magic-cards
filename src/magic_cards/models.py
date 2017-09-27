@@ -20,6 +20,7 @@ class Card(NameMixin, models.Model):
     text = models.TextField(blank=True)
     power = models.CharField(max_length=7, blank=True)
     toughness = models.CharField(max_length=7, blank=True)
+    loyalty = models.SmallIntegerField(blank=True, null=True)
 
 
 class Set(NameMixin, models.Model):
