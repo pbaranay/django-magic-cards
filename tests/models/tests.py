@@ -18,3 +18,12 @@ class ImportScriptTests(TestCase):
         # SQLite does not actually enforce the length of a VARCHAR, but Django will validate
         # if we call full_clean.
         longest_name_card.full_clean()
+
+    def test_planeswalker_loyalty(self):
+        import_cards(["AVR"])
+
+        tamiyo = Card.objects.get(name="Tamiyo, the Moon Sage")
+        self.assertEqual(tamiyo.loyalty, 4)
+
+        tracker = Card.objects.get(name="Ulvenwald Tracker")
+        self.assertIsNone(tracker.loyalty)
