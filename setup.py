@@ -24,12 +24,16 @@ version = get_version("src", "magic_cards", "__init__.py")
 if sys.argv[-1] == 'publish':
     try:
         import wheel
-        print("Wheel version: ", wheel.__version__)
     except ImportError:
         print('Wheel library missing. Please run "pip install wheel"')
         sys.exit()
-    os.system('python setup.py sdist upload')
-    os.system('python setup.py bdist_wheel upload')
+    try:
+        import twine
+    except ImportError:
+        print('Twine library missing. Please run "pip install twine"')
+        sys.exit()
+    os.system('python setup.py sdist bdist_wheel --universal')
+    os.system('twine upload dist/*')
     sys.exit()
 
 if sys.argv[-1] == 'tag':
