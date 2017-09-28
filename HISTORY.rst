@@ -3,6 +3,15 @@
 History
 -------
 
+0.3.0 (2017-09-28)
+++++++++++++++++++
+
+* Store planeswalkers' starting loyalty (`#19`_).
+* Correctly populate flavor text.
+* Fix issue that crashed re-importing a set without multiverse IDs.
+
+.. _#19: https://github.com/pbaranay/django-magic-cards/issues/19
+
 0.2.0 (2017-08-16)
 ++++++++++++++++++
 
