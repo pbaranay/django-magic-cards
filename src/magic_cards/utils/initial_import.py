@@ -148,7 +148,10 @@ def parse_data(sets_data, set_codes):
             if set_created:
                 printings_to_create.append(Printing(**printing_kwargs))
             else:
-                Printing.objects.get_or_create(**printing_kwargs)
+                # Use .filter().exists() followed by a create() instead of get_or_create,
+                # since these kwargs aren't unique for sets without proper multiverse_ids.
+                if not Printing.objects.filter(**printing_kwargs).exists():
+                    Printing.objects.create(**printing_kwargs)
 
         if printings_to_create:
             Printing.objects.bulk_create(printings_to_create)

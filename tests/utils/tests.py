@@ -89,6 +89,21 @@ class ImportScriptTests(ImportTestBase, TestCase):
         self.assertEqual(Card.objects.count(), 287)
         self.assertEqual(Printing.objects.count(), 302)
 
+    def test_reimport_sets_without_multiverse_ids(self):
+        """
+        Even if a set does not have proper multiverse_ids in MTGJSON, importing it
+        multiple times has no effect and does not crash.
+        """
+        import_cards(["CED"])
+        card_count = Card.objects.count()
+        printing_count = Printing.objects.count()
+
+        import_cards(["CED"])
+
+        self.assertEqual(Set.objects.count(), 1)
+        self.assertEqual(Card.objects.count(), card_count)
+        self.assertEqual(Printing.objects.count(), printing_count)
+
     def test_import_betrayers(self):
         """
         Data integrity issues from a bug in MTGJSON are cleaned up by the import process.
