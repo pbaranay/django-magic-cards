@@ -2,7 +2,7 @@ from django.core.management import BaseCommand
 import inflect
 
 from magic_cards.models import Card, Printing, Set
-from magic_cards.utils.initial_import import import_cards, Everything
+from magic_cards.utils.import_cards import import_cards, Everything
 
 
 class Command(BaseCommand):

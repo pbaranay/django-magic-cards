@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from magic_cards.models import Card
-from magic_cards.utils.initial_import import import_cards
+from magic_cards.utils.import_cards import import_cards
 
 
 class ImportScriptTests(TestCase):

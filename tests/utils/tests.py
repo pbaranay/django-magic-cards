@@ -8,7 +8,7 @@ from django.test import TestCase
 from django.utils.six import StringIO
 
 from magic_cards.models import Card, CardSubtype, Printing, Set
-from magic_cards.utils.initial_import import import_cards, parse_data
+from magic_cards.utils.import_cards import import_cards, parse_data
 
 
 class ImportTestBase:
