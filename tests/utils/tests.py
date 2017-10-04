@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+import unittest
 
 from django.core.management import call_command
 from django.db.models import Count
@@ -37,6 +38,15 @@ class ImportTestBase:
 
 class ImportScriptTests(ImportTestBase, TestCase):
 
+    @unittest.skipIf(
+        all([
+            os.environ.get("TRAVIS", False),
+            any([
+                os.environ.get("DJANGO", None) != '1.11',
+                os.environ.get("TRAVIS_PYTHON_VERSION", None) != '3.6',
+            ]),
+        ]),
+        "On Travis, only runs on Django 1.11 under Python 3.6")
     def test_import_all_cards(self):
         import_cards()
 
