@@ -106,7 +106,7 @@ def parse_data(sets_data, set_codes):
             power = card_data.get('power', '')
             toughness = card_data.get('toughness', '')
             loyalty = card_data.get('loyalty', None)
-            card, _ = Card.objects.get_or_create(
+            card, created = Card.objects.update_or_create(
                 name=name, defaults={
                     'mana_cost': mana_cost,
                     'text': text,
@@ -117,6 +117,10 @@ def parse_data(sets_data, set_codes):
             supertypes = card_data.get('supertypes', [])
             types = card_data['types']
             subtypes = card_data.get('subtypes', [])
+            if not created:
+                card.supertypes.clear()
+                card.types.clear()
+                card.subtypes.clear()
             for supertype_name in supertypes:
                 supertype, _ = cache.get_or_create(CardSupertype, 'name', supertype_name)
                 card.supertypes.add(supertype)
@@ -165,6 +169,12 @@ def parse_data(sets_data, set_codes):
                 set__code='BOK', card__name=name)[1:].values_list(
                     'pk', flat=True)
             Printing.objects.filter(pk__in=list(extra_printings)).delete()
+
+    # Clean up any supertypes, subtypes, and types that have no Cards left.
+    for model in [CardSubtype, CardType, CardSupertype]:
+        for obj in model.objects.all():
+            if obj.card_set.count() == 0:
+                obj.delete()
 
 
 @transaction.atomic

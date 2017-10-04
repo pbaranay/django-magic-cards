@@ -1,10 +1,14 @@
+import copy
+import json
+import os
+
 from django.core.management import call_command
 from django.db.models import Count
 from django.test import TestCase
 from django.utils.six import StringIO
 
-from magic_cards.models import Card, Printing, Set
-from magic_cards.utils.initial_import import import_cards
+from magic_cards.models import Card, CardSubtype, Printing, Set
+from magic_cards.utils.initial_import import import_cards, parse_data
 
 
 class ImportTestBase:
@@ -123,6 +127,77 @@ class ImportScriptTests(ImportTestBase, TestCase):
         # +   0 Basic lands
 
         self.check_common_set_constraints()
+
+
+class ImportScriptUpdateTests(TestCase):
+
+    FIXTURES_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'fixtures')
+
+    def test_update_text(self):
+        with open(os.path.join(self.FIXTURES_DIR, 'eyes_in_the_skies.json')) as f:
+            final_data = json.load(f)
+
+        original_text = final_data['RTR']['cards'][0]['originalText']
+        final_text = final_data['RTR']['cards'][0]['text']
+
+        # Copy the data and munge it into its original state.
+        original_data = copy.deepcopy(final_data)
+        original_data['RTR']['cards'][0]['text'] = original_text
+
+        # Import the original data.
+        parse_data(original_data, ['RTR'])
+        eyes_in_the_skies = Card.objects.first()
+        self.assertEqual(eyes_in_the_skies.text, original_text)
+
+        # Import the final, updated data.
+        parse_data(final_data, ['RTR'])
+        eyes_in_the_skies.refresh_from_db()
+        self.assertEqual(eyes_in_the_skies.text, final_text)
+
+    def test_update_types(self):
+        with open(os.path.join(self.FIXTURES_DIR, 'jackal_pup.json')) as f:
+            final_data = json.load(f)
+
+        # Copy the data and munge the types.
+        original_data = copy.deepcopy(final_data)
+        original_subtype = 'Hound'
+        original_data['TMP']['cards'][0]['subtypes'] = [original_subtype]
+
+        # Import the original data.
+        parse_data(original_data, ['TMP'])
+        jackal_pup = Card.objects.first()
+        self.assertEqual(jackal_pup.subtypes.count(), 1)
+        self.assertEqual(jackal_pup.subtypes.first().name, original_subtype)
+
+        # Import the final, updated data.
+        parse_data(final_data, ['TMP'])
+        jackal_pup.refresh_from_db()
+        self.assertEqual(jackal_pup.subtypes.count(), 1)
+        self.assertEqual(jackal_pup.subtypes.first().name, 'Jackal')
+        # The Hound subtype has been deleted.
+        self.assertFalse(CardSubtype.objects.filter(name=original_subtype).exists())
+
+    def test_update_loyalty(self):
+        """
+        Simulates the upgrade process from version 0.2 to version 0.3.
+        """
+        with open(os.path.join(self.FIXTURES_DIR, 'vraska_the_unseen.json')) as f:
+            final_data = json.load(f)
+
+        # Copy the data and munge it to remove the loyalty.
+        original_data = copy.deepcopy(final_data)
+        del original_data['RTR']['cards'][0]['loyalty']
+
+        # Import the original data.
+        parse_data(original_data, ['RTR'])
+        vraska = Card.objects.first()
+        self.assertIsNone(vraska.loyalty)
+
+        # Import the final, updated data.
+        parse_data(final_data, ['RTR'])
+        vraska.refresh_from_db()
+        self.assertEqual(vraska.loyalty, 5)
+
 
 class ImportManagementCommandTests(ImportTestBase, TestCase):
 
