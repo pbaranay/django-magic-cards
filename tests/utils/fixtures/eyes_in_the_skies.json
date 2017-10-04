@@ -1,0 +1,180 @@
+{
+  "RTR": {
+    "name": "Return to Ravnica",
+    "code": "RTR",
+    "magicCardsInfoCode": "rtr",
+    "releaseDate": "2012-10-05",
+    "border": "black",
+    "type": "expansion",
+    "block": "Return to Ravnica",
+    "booster": [
+      [
+        "rare",
+        "mythic rare"
+      ],
+      "uncommon",
+      "uncommon",
+      "uncommon",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "land",
+      "marketing"
+    ],
+    "translations": {
+      "de": "Rückkehr nach Ravnica",
+      "fr": "Retour sur Ravnica",
+      "it": "Ritorno a Ravnica",
+      "es": "Regreso a Rávnica",
+      "pt": "Retorno a Ravnica",
+      "jp": "ラヴニカへの回帰",
+      "cn": "再访拉尼卡",
+      "ru": "Возвращение в Равнику",
+      "tw": "再訪拉尼卡",
+      "ko": "라브니카로의 귀환"
+    },
+    "mkm_name": "Return to Ravnica",
+    "mkm_id": 1389,
+    "cards": [
+      {
+        "artist": "James Ryman",
+        "cmc": 4,
+        "colorIdentity": [
+          "W"
+        ],
+        "colors": [
+          "White"
+        ],
+        "flavor": "\"What root and branch cannot reach, our winged friends will attend to.\"\n—Zunak, Selesnya strategist",
+        "foreignNames": [
+          {
+            "language": "Chinese Simplified",
+            "name": "苍穹之眼",
+            "multiverseid": 357116
+          },
+          {
+            "language": "Chinese Traditional",
+            "name": "蒼穹之眼",
+            "multiverseid": 355472
+          },
+          {
+            "language": "French",
+            "name": "Yeux des cieux",
+            "multiverseid": 356020
+          },
+          {
+            "language": "German",
+            "name": "Augen im Himmel",
+            "multiverseid": 355746
+          },
+          {
+            "language": "Italian",
+            "name": "Occhi nel Cielo",
+            "multiverseid": 356294
+          },
+          {
+            "language": "Japanese",
+            "name": "天空の目",
+            "multiverseid": 356568
+          },
+          {
+            "language": "Korean",
+            "name": "하늘에서 지켜보는 눈",
+            "multiverseid": 357390
+          },
+          {
+            "language": "Portuguese (Brazil)",
+            "name": "Olhos nos Céus",
+            "multiverseid": 356842
+          },
+          {
+            "language": "Russian",
+            "name": "Глаза в Небе",
+            "multiverseid": 355198
+          },
+          {
+            "language": "Spanish",
+            "name": "Ojos en el cielo",
+            "multiverseid": 365468
+          }
+        ],
+        "id": "9bb38b916f4dfbb1c1ca398ffa08b9bef05b19b9",
+        "imageName": "eyes in the skies",
+        "layout": "normal",
+        "legalities": [
+          {
+            "format": "Commander",
+            "legality": "Legal"
+          },
+          {
+            "format": "Legacy",
+            "legality": "Legal"
+          },
+          {
+            "format": "Modern",
+            "legality": "Legal"
+          },
+          {
+            "format": "Return to Ravnica Block",
+            "legality": "Legal"
+          },
+          {
+            "format": "Vintage",
+            "legality": "Legal"
+          }
+        ],
+        "manaCost": "{3}{W}",
+        "mciNumber": "10",
+        "multiverseid": 253553,
+        "name": "Eyes in the Skies",
+        "number": "10",
+        "originalText": "Put a 1/1 white Bird creature token with flying onto the battlefield, then populate. (Put a token onto the battlefield that's a copy of a creature token you control.)",
+        "originalType": "Instant",
+        "printings": [
+          "RTR",
+          "MM3"
+        ],
+        "rarity": "Common",
+        "rulings": [
+          {
+            "date": "2013-04-15",
+            "text": "You can choose any creature token you control for populate. If a spell or ability puts a token onto the battlefield under your control and then instructs you to populate (as Coursers' Accord does), you may choose to copy the token you just created, or you may choose to copy another creature token you control."
+          },
+          {
+            "date": "2013-04-15",
+            "text": "If you choose to copy a creature token that's a copy of another creature, the new creature token will copy the characteristics of whatever the original token is copying."
+          },
+          {
+            "date": "2013-04-15",
+            "text": "The new creature token copies the characteristics of the original token as stated by the effect that put the original token onto the battlefield."
+          },
+          {
+            "date": "2013-04-15",
+            "text": "The new token doesn't copy whether the original token is tapped or untapped, whether it has any counters on it or Auras and Equipment attached to it, or any noncopy effects that have changed its power, toughness, color, and so on."
+          },
+          {
+            "date": "2013-04-15",
+            "text": "Any \"as [this creature] enters the battlefield\" or \"[this creature] enters the battlefield with\" abilities of the new token will work."
+          },
+          {
+            "date": "2013-04-15",
+            "text": "If you control no creature tokens when you populate, nothing will happen."
+          }
+        ],
+        "text": "Create a 1/1 white Bird creature token with flying, then populate. (Create a token that's a copy of a creature token you control.)",
+        "type": "Instant",
+        "types": [
+          "Instant"
+        ],
+        "watermark": "Selesnya"
+      }
+    ]
+  }
+}

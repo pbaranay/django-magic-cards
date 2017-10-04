@@ -1,0 +1,168 @@
+{
+  "RTR": {
+    "name": "Return to Ravnica",
+    "code": "RTR",
+    "magicCardsInfoCode": "rtr",
+    "releaseDate": "2012-10-05",
+    "border": "black",
+    "type": "expansion",
+    "block": "Return to Ravnica",
+    "booster": [
+      [
+        "rare",
+        "mythic rare"
+      ],
+      "uncommon",
+      "uncommon",
+      "uncommon",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "land",
+      "marketing"
+    ],
+    "translations": {
+      "de": "Rückkehr nach Ravnica",
+      "fr": "Retour sur Ravnica",
+      "it": "Ritorno a Ravnica",
+      "es": "Regreso a Rávnica",
+      "pt": "Retorno a Ravnica",
+      "jp": "ラヴニカへの回帰",
+      "cn": "再访拉尼卡",
+      "ru": "Возвращение в Равнику",
+      "tw": "再訪拉尼卡",
+      "ko": "라브니카로의 귀환"
+    },
+    "mkm_name": "Return to Ravnica",
+    "mkm_id": 1389,
+    "cards": [
+      {
+        "artist": "Aleksi Briclot",
+        "cmc": 5,
+        "colorIdentity": [
+          "B",
+          "G"
+        ],
+        "colors": [
+          "Black",
+          "Green"
+        ],
+        "foreignNames": [
+          {
+            "language": "Chinese Simplified",
+            "name": "隐密客瓦丝卡",
+            "multiverseid": 357314
+          },
+          {
+            "language": "Chinese Traditional",
+            "name": "隱密客瓦絲卡",
+            "multiverseid": 355670
+          },
+          {
+            "language": "French",
+            "name": "Vraska l'Inapparente",
+            "multiverseid": 356218
+          },
+          {
+            "language": "German",
+            "name": "Vraska die Unbetrachtete",
+            "multiverseid": 355944
+          },
+          {
+            "language": "Italian",
+            "name": "Vraska l'Invisibile",
+            "multiverseid": 356492
+          },
+          {
+            "language": "Japanese",
+            "name": "見えざる者、ヴラスカ",
+            "multiverseid": 356766
+          },
+          {
+            "language": "Korean",
+            "name": "보이지 않는 자 브라스카",
+            "multiverseid": 357588
+          },
+          {
+            "language": "Portuguese (Brazil)",
+            "name": "Vraska, a Oculta",
+            "multiverseid": 357040
+          },
+          {
+            "language": "Russian",
+            "name": "Враска Невидимая",
+            "multiverseid": 355396
+          },
+          {
+            "language": "Spanish",
+            "name": "Vraska la invisible",
+            "multiverseid": 365666
+          }
+        ],
+        "id": "83fd3f14d49110928a3d373328e87c63522e122f",
+        "imageName": "vraska the unseen",
+        "layout": "normal",
+        "legalities": [
+          {
+            "format": "Commander",
+            "legality": "Legal"
+          },
+          {
+            "format": "Legacy",
+            "legality": "Legal"
+          },
+          {
+            "format": "Modern",
+            "legality": "Legal"
+          },
+          {
+            "format": "Return to Ravnica Block",
+            "legality": "Legal"
+          },
+          {
+            "format": "Vintage",
+            "legality": "Legal"
+          }
+        ],
+        "loyalty": 5,
+        "manaCost": "{3}{B}{G}",
+        "mciNumber": "208",
+        "multiverseid": 290538,
+        "name": "Vraska the Unseen",
+        "number": "208",
+        "originalText": "+1: Until your next turn, whenever a creature deals combat damage to Vraska the Unseen, destroy that creature.\n-3: Destroy target nonland permanent.\n-7: Put three 1/1 black Assassin creature tokens onto the battlefield with \"Whenever this creature deals combat damage to a player, that player loses the game.\"",
+        "originalType": "Planeswalker — Vraska",
+        "printings": [
+          "RTR",
+          "DDM"
+        ],
+        "rarity": "Mythic Rare",
+        "rulings": [
+          {
+            "date": "2012-10-01",
+            "text": "If an effect creates a copy of one of the Assassin creature tokens, the copy will also have the triggered ability."
+          },
+          {
+            "date": "2012-10-01",
+            "text": "Each Assassin token's triggered ability will trigger whenever it deals combat damage to any player, including you."
+          }
+        ],
+        "subtypes": [
+          "Vraska"
+        ],
+        "text": "+1: Until your next turn, whenever a creature deals combat damage to Vraska the Unseen, destroy that creature.\n−3: Destroy target nonland permanent.\n−7: Create three 1/1 black Assassin creature tokens with \"Whenever this creature deals combat damage to a player, that player loses the game.\"",
+        "type": "Planeswalker — Vraska",
+        "types": [
+          "Planeswalker"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "TMP": {
+    "name": "Tempest",
+    "code": "TMP",
+    "gathererCode": "TE",
+    "magicCardsInfoCode": "tp",
+    "releaseDate": "1997-10-14",
+    "border": "black",
+    "type": "expansion",
+    "block": "Tempest",
+    "booster": [
+      "rare",
+      "uncommon",
+      "uncommon",
+      "uncommon",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common",
+      "common"
+    ],
+    "translations": {
+      "de": "Sturmwind",
+      "fr": "Tempête",
+      "it": "Tempesta",
+      "es": "Tempestad",
+      "pt": "Tempestade"
+    },
+    "mkm_name": "Tempest",
+    "mkm_id": 19,
+    "cards": [
+      {
+        "artist": "Susan Van Camp",
+        "cmc": 1,
+        "colorIdentity": [
+          "R"
+        ],
+        "colors": [
+          "Red"
+        ],
+        "flavor": "The first morning after acquiring her familiar, the wizard awoke with fleabites and mange.",
+        "id": "f30fc50e9265c9c7eacc142848e77ebeb937bad2",
+        "imageName": "jackal pup",
+        "layout": "normal",
+        "legalities": [
+          {
+            "format": "Commander",
+            "legality": "Legal"
+          },
+          {
+            "format": "Legacy",
+            "legality": "Legal"
+          },
+          {
+            "format": "Tempest Block",
+            "legality": "Legal"
+          },
+          {
+            "format": "Vintage",
+            "legality": "Legal"
+          }
+        ],
+        "manaCost": "{R}",
+        "mciNumber": "183",
+        "multiverseid": 4825,
+        "name": "Jackal Pup",
+        "originalText": "For each 1 damage dealt to Jackal Pup, it deals 1 damage to you.",
+        "originalType": "Summon — Hound",
+        "power": "2",
+        "printings": [
+          "TMP",
+          "pFNM",
+          "PD2"
+        ],
+        "rarity": "Uncommon",
+        "subtypes": [
+          "Jackal"
+        ],
+        "text": "Whenever Jackal Pup is dealt damage, it deals that much damage to you.",
+        "toughness": "1",
+        "type": "Creature — Jackal",
+        "types": [
+          "Creature"
+        ]
+      }
+    ]
+  }
+}
