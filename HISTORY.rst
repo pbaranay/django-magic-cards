@@ -3,6 +3,14 @@
 History
 -------
 
+
+0.4.0 (2017-10-04)
+++++++++++++++++++
+
+* Update a `Card`'s data (text, loyalty, types, etc.) when a set is re-imported (`#23`_).
+
+.. _#23: https://github.com/pbaranay/django-magic-cards/issues/23
+
 0.3.0 (2017-09-28)
 ++++++++++++++++++
 

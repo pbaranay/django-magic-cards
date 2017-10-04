@@ -189,7 +189,7 @@ class ImportScriptUpdateTests(TestCase):
 
     def test_update_loyalty(self):
         """
-        Simulates the upgrade process from version 0.2 to version 0.3.
+        Simulates the upgrade process from version 0.2 to version 0.4.
         """
         with open(os.path.join(self.FIXTURES_DIR, 'vraska_the_unseen.json')) as f:
             final_data = json.load(f)
