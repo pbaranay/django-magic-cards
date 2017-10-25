@@ -1,9 +1,13 @@
+from __future__ import unicode_literals
+
 import random
 
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 from django_light_enums import enum
 
 
+@python_2_unicode_compatible
 class NameMixin(object):
     def __str__(self):
         return self.name
@@ -36,6 +40,7 @@ class PrintingQuerySet(models.QuerySet):
         return self.filter(id__in=random_ids)
 
 
+@python_2_unicode_compatible
 class Printing(models.Model):
     class Rarity(enum.Enum):
         MYTHIC = 10
@@ -77,6 +82,7 @@ class CardSubtype(NameMixin, models.Model):
     name = models.CharField(max_length=32, unique=True)
 
 
+@python_2_unicode_compatible
 class Artist(models.Model):
     full_name = models.CharField(max_length=127, unique=True)
 
