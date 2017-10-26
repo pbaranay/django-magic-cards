@@ -3,6 +3,13 @@
 History
 -------
 
+0.4.1 (2017-10-26)
+++++++++++++++++++
+
+* Improve Unicode handling on Python 2, allowing the Printings admin
+  page to load properly (`#27`_).
+
+.. _#27: https://github.com/pbaranay/django-magic-cards/issues/27
 
 0.4.0 (2017-10-04)
 ++++++++++++++++++
