@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import random
 
+from django.conf.global_settings import LANGUAGES
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django_light_enums import enum
@@ -68,6 +69,35 @@ class Printing(models.Model):
 
     def __str__(self):
         return '{} ({})'.format(self.card, self.set.code)
+
+
+MAGIC_LANGUAGE_CODES = [
+    'en',  # English
+    'zh-hans',  # Simplified Chinese
+    'zh-hant',  # Traditional Chinese
+    'fr',  # French
+    'de',  # German
+    'it',  # Italian
+    'ja',  # Japanese
+    'ko',  # Korean
+    'pt',  # Portuguese
+    'ru',  # Russian
+    'es',  # Spanish
+]
+MAGIC_LANGUAGES = [l for l in LANGUAGES if l[0] in MAGIC_LANGUAGE_CODES]
+
+
+class ForeignPrinting(NameMixin, models.Model):
+    name = models.CharField(max_length=255)
+    language = models.CharField(max_length=7, choices=MAGIC_LANGUAGES)
+    multiverse_id = models.PositiveIntegerField(blank=True, null=True)
+    base_printing = models.ForeignKey('Printing', related_name='foreign_printings')
+
+    @property
+    def image_url(self):
+        if self.multiverse_id:
+            return 'http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid={}&type=card'.format(
+                self.multiverse_id)
 
 
 class CardSupertype(NameMixin, models.Model):
