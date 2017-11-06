@@ -6,7 +6,10 @@ from contextlib import closing
 import requests
 from django.db import transaction
 
-from magic_cards.models import Artist, Card, CardSubtype, CardSupertype, CardType, Printing, Set
+from magic_cards.models import (Artist, Card, CardSubtype, CardSupertype, CardType,
+                                ForeignPrinting, Printing, Set)
+from magic_cards.utils.language import convert_language_name_to_code
+
 
 MTG_JSON_URL = 'https://mtgjson.com/json/AllSets-x.json.zip'
 FALLBACK_MTG_JSON_URL = 'http://mtgjson.com/json/AllSets-x.json.zip'
@@ -68,7 +71,7 @@ class ModelCache(dict):
         return result, created
 
 
-def parse_data(sets_data, set_codes):
+def parse_data(sets_data, set_codes, foreign_printings):
     # Load supertypes, types, and subtypes into memory
     cache = ModelCache()
     for model in [CardSupertype, CardType, CardSubtype]:
@@ -90,6 +93,13 @@ def parse_data(sets_data, set_codes):
         magic_set, set_created = cache.get_or_create(Set, 'code', code, name=data['name'])
 
         printings_to_create = []
+
+        foreign_printings_data = {}
+        # Create ForeignPrintings if
+        # - Specified in the command, AND
+        # - The set is newly-created OR has no ForeignPrintings yet.
+        create_foreign = foreign_printings and (set_created or ForeignPrinting.objects.filter(
+            base_printing__set=magic_set).count() == 0)
 
         # Create cards
         all_cards_data = data['cards']
@@ -157,8 +167,43 @@ def parse_data(sets_data, set_codes):
                 if not Printing.objects.filter(**printing_kwargs).exists():
                     Printing.objects.create(**printing_kwargs)
 
+            # Populate the foreign data dictionary for this printing (if required).
+            if multiverse_id and create_foreign:
+                foreign_data = card_data.get('foreignNames')
+                if foreign_data:
+                    # Cards with multiple printings in the same set all have the same foreignNames
+                    # data, which is composed of an entry for *each* printing, leading to
+                    # duplication. As a workaround, we collapse the data, since we care more about
+                    # getting *some* multiverse_id than the precisely correct one.
+                    # In some unusual cases, a multiverse_id is not specified. We still create a
+                    # ForeignPrinting in that case, as we'd rather record information about the
+                    # foreign name than no information at all.
+                    foreign_printings_data[multiverse_id] = {
+                        e['language']: {'name': e['name'], 'multiverse_id': e.get('multiverseid')}
+                        for e in foreign_data}
+
         if printings_to_create:
             Printing.objects.bulk_create(printings_to_create)
+
+        # Create ForeignPrintings (if required).
+        if foreign_printings_data:
+            foreign_printings_to_create = []
+            base_printings = Printing.objects.filter(
+                multiverse_id__in=foreign_printings_data.keys()
+            )
+            base_printings_dict = {bp.multiverse_id: bp for bp in base_printings}
+            for base_multiverse_id, outer_data in foreign_printings_data.items():
+                for language, inner_data in outer_data.items():
+                    language_code = convert_language_name_to_code(language)
+                    if not language_code:
+                        continue  # TODO: Log or track this failure.
+                    foreign_printings_to_create.append(ForeignPrinting(
+                        base_printing=base_printings_dict[base_multiverse_id],
+                        language=language_code,
+                        name=inner_data['name'],
+                        multiverse_id=inner_data['multiverse_id']
+                    ))
+            ForeignPrinting.objects.bulk_create(foreign_printings_to_create)
 
     # Remove extra Printings caused by data that is duplicated on MTGJSON.
     # https://github.com/mtgjson/mtgjson/issues/388
@@ -178,9 +223,9 @@ def parse_data(sets_data, set_codes):
 
 
 @transaction.atomic
-def import_cards(set_codes=Everything):
+def import_cards(set_codes=Everything, foreign_printings=True):
     sets_data = fetch_data()
-    parse_data(sets_data, set_codes)
+    parse_data(sets_data, set_codes, foreign_printings)
 
 
 if __name__ == "__main__":
