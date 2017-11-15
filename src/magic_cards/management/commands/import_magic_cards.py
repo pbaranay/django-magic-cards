@@ -1,7 +1,7 @@
 from django.core.management import BaseCommand
 import inflect
 
-from magic_cards.models import Card, Printing, Set
+from magic_cards.models import Card, ForeignPrinting, Printing, Set
 from magic_cards.utils.import_cards import import_cards, Everything
 
 
@@ -10,9 +10,11 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('set_code', nargs='*', type=str)
+        parser.add_argument('--skip-foreign', action='store_true',
+                            help="Don't import foreign printings")
 
     def handle(self, *args, **options):
-        models_to_track = [Set, Card, Printing]
+        models_to_track = [Set, Card, Printing, ForeignPrinting]
         initial = {model: model.objects.count() for model in models_to_track}
 
         p = inflect.engine()
@@ -24,7 +26,8 @@ class Command(BaseCommand):
             set_string = 'all sets'
 
         self.stdout.write(p.inflect("Beginning import of {}.".format(set_string)))
-        import_cards(set_codes or Everything)
+        import_cards(set_codes=set_codes or Everything,
+                     foreign_printings=not options['skip_foreign'])
         self.stdout.write("Import complete.")
 
         final = {model: model.objects.count() for model in models_to_track}
