@@ -160,12 +160,12 @@ class ImportScriptUpdateTests(TestCase):
         original_data['RTR']['cards'][0]['text'] = original_text
 
         # Import the original data.
-        parse_data(original_data, ['RTR'])
+        parse_data(original_data, ['RTR'], foreign_printings=False)
         eyes_in_the_skies = Card.objects.first()
         self.assertEqual(eyes_in_the_skies.text, original_text)
 
         # Import the final, updated data.
-        parse_data(final_data, ['RTR'])
+        parse_data(final_data, ['RTR'], foreign_printings=False)
         eyes_in_the_skies.refresh_from_db()
         self.assertEqual(eyes_in_the_skies.text, final_text)
 
@@ -179,13 +179,13 @@ class ImportScriptUpdateTests(TestCase):
         original_data['TMP']['cards'][0]['subtypes'] = [original_subtype]
 
         # Import the original data.
-        parse_data(original_data, ['TMP'])
+        parse_data(original_data, ['TMP'], foreign_printings=False)
         jackal_pup = Card.objects.first()
         self.assertEqual(jackal_pup.subtypes.count(), 1)
         self.assertEqual(jackal_pup.subtypes.first().name, original_subtype)
 
         # Import the final, updated data.
-        parse_data(final_data, ['TMP'])
+        parse_data(final_data, ['TMP'], foreign_printings=False)
         jackal_pup.refresh_from_db()
         self.assertEqual(jackal_pup.subtypes.count(), 1)
         self.assertEqual(jackal_pup.subtypes.first().name, 'Jackal')
@@ -204,12 +204,12 @@ class ImportScriptUpdateTests(TestCase):
         del original_data['RTR']['cards'][0]['loyalty']
 
         # Import the original data.
-        parse_data(original_data, ['RTR'])
+        parse_data(original_data, ['RTR'], foreign_printings=False)
         vraska = Card.objects.first()
         self.assertIsNone(vraska.loyalty)
 
         # Import the final, updated data.
-        parse_data(final_data, ['RTR'])
+        parse_data(final_data, ['RTR'], foreign_printings=False)
         vraska.refresh_from_db()
         self.assertEqual(vraska.loyalty, 5)
 
