@@ -8,8 +8,13 @@ from django.db.models import Count
 from django.test import TestCase
 from django.utils.six import StringIO
 
-from magic_cards.models import Card, CardSubtype, Printing, Set
+from magic_cards.models import Card, CardSubtype, ForeignPrinting, Printing, Set
 from magic_cards.utils.import_cards import import_cards, parse_data
+
+
+SOM_CARDS = 234
+SOM_PRINTINGS = 249
+SOM_FOREIGN_PRINTINGS = 2201
 
 
 class ImportTestBase:
@@ -62,10 +67,10 @@ class ImportScriptTests(ImportTestBase, TestCase):
         self.assertEqual(scars.name, "Scars of Mirrodin")
         self.assertEqual(scars.code, "SOM")
 
-        self.assertEqual(Card.objects.count(), 234)
+        self.assertEqual(Card.objects.count(), SOM_CARDS)
         #   234 Distinctly-named cards
 
-        self.assertEqual(Printing.objects.count(), 249)
+        self.assertEqual(Printing.objects.count(), SOM_PRINTINGS)
         #   234 Number of cards
         # +  15 Each of the 5 basic lands has 3 additional arts
 
@@ -213,14 +218,14 @@ class ImportManagementCommandTests(ImportTestBase, TestCase):
 
     command = 'import_magic_cards'
 
-    def test_import_single_set(self):
-        out = StringIO()
-        call_command(self.command, 'SOM', stdout=out)
+    def check_results(self, output, expected_num_cards, expected_num_printings, expected_num_foreign_printings):
         self.assertEqual(
             "Beginning import of 1 set (SOM).\n"
             "Import complete.\n"
-            "Added 1 new Set, 234 new Cards, and 249 new Printings.\n",
-            out.getvalue()
+            "Added 1 new Set, {} new Cards, {} new Printings, and {} new ForeignPrintings.\n".format(
+                expected_num_cards, expected_num_printings, expected_num_foreign_printings
+            ),
+            output.getvalue()
         )
 
         self.assertEqual(Set.objects.count(), 1)
@@ -228,6 +233,19 @@ class ImportManagementCommandTests(ImportTestBase, TestCase):
         self.assertEqual(scars.name, "Scars of Mirrodin")
         self.assertEqual(scars.code, "SOM")
 
-        self.assertEqual(Card.objects.count(), 234)
-        self.assertEqual(Printing.objects.count(), 249)
+        self.assertEqual(Card.objects.count(), expected_num_cards)
+        self.assertEqual(Printing.objects.count(), expected_num_printings)
+        self.assertEqual(ForeignPrinting.objects.count(), expected_num_foreign_printings)
         self.check_common_set_constraints()
+
+    def test_import_single_set(self):
+        out = StringIO()
+        call_command(self.command, 'SOM', stdout=out)
+
+        self.check_results(out, SOM_CARDS, SOM_PRINTINGS, SOM_FOREIGN_PRINTINGS)
+
+    def test_disable_foreign_printings(self):
+        out = StringIO()
+        call_command(self.command, '--skip-foreign', 'SOM', stdout=out)
+
+        self.check_results(out, SOM_CARDS, SOM_PRINTINGS, 0)
