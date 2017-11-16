@@ -9,7 +9,7 @@ from django.test import TestCase
 from django.utils.six import StringIO
 
 from magic_cards.models import Card, CardSubtype, Printing, Set
-from magic_cards.utils.import_cards import import_cards, parse_data
+from magic_cards.utils.import_cards import Everything, fetch_data, import_cards, parse_data
 
 
 SOM_CARDS = 234
@@ -52,11 +52,23 @@ class ImportScriptTests(ImportTestBase, TestCase):
         ]),
         "On Travis, only runs on Django 1.11 under Python 3.6")
     def test_import_all_cards(self):
-        import_cards()
+        # Fetch the data directly to establish expectations.
+        sets_data = fetch_data()
+        expected_num_sets = len(sets_data)
+        expected_num_printings = 0
+        card_set = set()
+        for data in sets_data.values():
+            nontokens = [card for card in data['cards'] if card['layout'] != 'token']
+            card_set |= set(card['name'] for card in nontokens)
+            expected_num_printings += len(nontokens)
+        expected_num_cards = len(card_set)
+        expected_num_printings -= 2  # Spurious data in Betrayers of Kamigawa
 
-        self.assertEqual(Set.objects.count(), 214)
-        self.assertEqual(Card.objects.count(), 17733)
-        self.assertEqual(Printing.objects.count(), 34468)
+        parse_data(sets_data, Everything)
+
+        self.assertEqual(Set.objects.count(), expected_num_sets)
+        self.assertEqual(Card.objects.count(), expected_num_cards)
+        self.assertEqual(Printing.objects.count(), expected_num_printings)
 
     def test_import_single_set(self):
         import_cards(["SOM"])
