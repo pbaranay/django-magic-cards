@@ -12,6 +12,10 @@ from magic_cards.models import Card, CardSubtype, Printing, Set
 from magic_cards.utils.import_cards import import_cards, parse_data
 
 
+SOM_CARDS = 234
+SOM_PRINTINGS = 249
+
+
 class ImportTestBase:
 
     def check_common_set_constraints(self):
@@ -62,10 +66,10 @@ class ImportScriptTests(ImportTestBase, TestCase):
         self.assertEqual(scars.name, "Scars of Mirrodin")
         self.assertEqual(scars.code, "SOM")
 
-        self.assertEqual(Card.objects.count(), 234)
+        self.assertEqual(Card.objects.count(), SOM_CARDS)
         #   234 Distinctly-named cards
 
-        self.assertEqual(Printing.objects.count(), 249)
+        self.assertEqual(Printing.objects.count(), SOM_PRINTINGS)
         #   234 Number of cards
         # +  15 Each of the 5 basic lands has 3 additional arts
 
@@ -219,7 +223,8 @@ class ImportManagementCommandTests(ImportTestBase, TestCase):
         self.assertEqual(
             "Beginning import of 1 set (SOM).\n"
             "Import complete.\n"
-            "Added 1 new Set, 234 new Cards, and 249 new Printings.\n",
+            "Added 1 new Set, {} new Cards, and {} new Printings.\n".format(
+                SOM_CARDS, SOM_PRINTINGS),
             out.getvalue()
         )
 
@@ -228,6 +233,6 @@ class ImportManagementCommandTests(ImportTestBase, TestCase):
         self.assertEqual(scars.name, "Scars of Mirrodin")
         self.assertEqual(scars.code, "SOM")
 
-        self.assertEqual(Card.objects.count(), 234)
-        self.assertEqual(Printing.objects.count(), 249)
+        self.assertEqual(Card.objects.count(), SOM_CARDS)
+        self.assertEqual(Printing.objects.count(), SOM_PRINTINGS)
         self.check_common_set_constraints()
