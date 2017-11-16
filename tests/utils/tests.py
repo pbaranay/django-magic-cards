@@ -9,7 +9,11 @@ from django.test import TestCase
 from django.utils.six import StringIO
 
 from magic_cards.models import Card, CardSubtype, Printing, Set
-from magic_cards.utils.import_cards import import_cards, parse_data
+from magic_cards.utils.import_cards import Everything, fetch_data, import_cards, parse_data
+
+
+SOM_CARDS = 234
+SOM_PRINTINGS = 249
 
 
 class ImportTestBase:
@@ -48,11 +52,23 @@ class ImportScriptTests(ImportTestBase, TestCase):
         ]),
         "On Travis, only runs on Django 1.11 under Python 3.6")
     def test_import_all_cards(self):
-        import_cards()
+        # Fetch the data directly to establish expectations.
+        sets_data = fetch_data()
+        expected_num_sets = len(sets_data)
+        expected_num_printings = 0
+        card_set = set()
+        for data in sets_data.values():
+            nontokens = [card for card in data['cards'] if card['layout'] != 'token']
+            card_set |= set(card['name'] for card in nontokens)
+            expected_num_printings += len(nontokens)
+        expected_num_cards = len(card_set)
+        expected_num_printings -= 2  # Spurious data in Betrayers of Kamigawa
 
-        self.assertEqual(Set.objects.count(), 214)
-        self.assertEqual(Card.objects.count(), 17733)
-        self.assertEqual(Printing.objects.count(), 34468)
+        parse_data(sets_data, Everything)
+
+        self.assertEqual(Set.objects.count(), expected_num_sets)
+        self.assertEqual(Card.objects.count(), expected_num_cards)
+        self.assertEqual(Printing.objects.count(), expected_num_printings)
 
     def test_import_single_set(self):
         import_cards(["SOM"])
@@ -62,10 +78,10 @@ class ImportScriptTests(ImportTestBase, TestCase):
         self.assertEqual(scars.name, "Scars of Mirrodin")
         self.assertEqual(scars.code, "SOM")
 
-        self.assertEqual(Card.objects.count(), 234)
+        self.assertEqual(Card.objects.count(), SOM_CARDS)
         #   234 Distinctly-named cards
 
-        self.assertEqual(Printing.objects.count(), 249)
+        self.assertEqual(Printing.objects.count(), SOM_PRINTINGS)
         #   234 Number of cards
         # +  15 Each of the 5 basic lands has 3 additional arts
 
@@ -219,7 +235,8 @@ class ImportManagementCommandTests(ImportTestBase, TestCase):
         self.assertEqual(
             "Beginning import of 1 set (SOM).\n"
             "Import complete.\n"
-            "Added 1 new Set, 234 new Cards, and 249 new Printings.\n",
+            "Added 1 new Set, {} new Cards, and {} new Printings.\n".format(
+                SOM_CARDS, SOM_PRINTINGS),
             out.getvalue()
         )
 
@@ -228,6 +245,6 @@ class ImportManagementCommandTests(ImportTestBase, TestCase):
         self.assertEqual(scars.name, "Scars of Mirrodin")
         self.assertEqual(scars.code, "SOM")
 
-        self.assertEqual(Card.objects.count(), 234)
-        self.assertEqual(Printing.objects.count(), 249)
+        self.assertEqual(Card.objects.count(), SOM_CARDS)
+        self.assertEqual(Printing.objects.count(), SOM_PRINTINGS)
         self.check_common_set_constraints()
