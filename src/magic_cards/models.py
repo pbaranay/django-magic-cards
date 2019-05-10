@@ -24,7 +24,7 @@ class Card(NameMixin, models.Model):
     text = models.TextField(blank=True)
     power = models.CharField(max_length=7, blank=True)
     toughness = models.CharField(max_length=7, blank=True)
-    loyalty = models.SmallIntegerField(blank=True, null=True)
+    loyalty = models.CharField(max_length=8, null=True, blank=True)
 
 
 class Set(NameMixin, models.Model):
@@ -52,12 +52,19 @@ class Printing(models.Model):
 
     objects = PrintingQuerySet.as_manager()
 
-    card = models.ForeignKey('Card', related_name='printings')
-    set = models.ForeignKey('Set', related_name='printings')
+    card = models.ForeignKey('Card',
+                             on_delete=models.CASCADE,
+                             related_name='printings')
+    set = models.ForeignKey('Set',
+                            on_delete=models.CASCADE,
+                            related_name='printings')
     rarity = enum.EnumField(Rarity)
     flavor_text = models.TextField(blank=True)
-    artist = models.ForeignKey('Artist', related_name='printings')
-    number = models.CharField(max_length=7, blank=True)
+    artist = models.ForeignKey('Artist',
+                               on_delete=models.CASCADE,
+                               null=True, blank=True,
+                               related_name='printings')
+    number = models.CharField(max_length=64, blank=True)
     multiverse_id = models.PositiveIntegerField(blank=True, null=True)
 
     @property

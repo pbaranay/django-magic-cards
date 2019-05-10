@@ -8,8 +8,7 @@ from django.db import transaction
 
 from magic_cards.models import Artist, Card, CardSubtype, CardSupertype, CardType, Printing, Set
 
-MTG_JSON_URL = 'https://mtgjson.com/json/AllSets-x.json.zip'
-FALLBACK_MTG_JSON_URL = 'http://mtgjson.com/json/AllSets-x.json.zip'
+MTG_JSON_URL = 'https://mtgjson.com/json/AllSets.json.zip'
 
 
 class Everything:
@@ -20,10 +19,7 @@ class Everything:
 
 
 def fetch_data():
-    try:
-        r = requests.get(MTG_JSON_URL)
-    except requests.ConnectionError:
-        r = requests.get(FALLBACK_MTG_JSON_URL)
+    r = requests.get(MTG_JSON_URL)
     with closing(r), zipfile.ZipFile(io.BytesIO(r.content)) as archive:
         unzipped_files = archive.infolist()
         if len(unzipped_files) != 1:
@@ -35,15 +31,15 @@ def fetch_data():
 
 
 def parse_rarity(string):
-    if string == 'Mythic Rare':
+    if string == 'mythic':
         return Printing.Rarity.MYTHIC
-    elif string == 'Rare':
+    elif string == 'rare':
         return Printing.Rarity.RARE
-    elif string == 'Uncommon':
+    elif string == 'uncommon':
         return Printing.Rarity.UNCOMMON
-    elif string == 'Common':
+    elif string == 'common':
         return Printing.Rarity.COMMON
-    elif string == 'Basic Land':
+    elif string == 'basic land':
         return Printing.Rarity.BASIC_LAND
     else:
         return Printing.Rarity.SPECIAL
@@ -58,12 +54,12 @@ class ModelCache(dict):
         Returns a tuple of `(object, created)`, where `created` is a boolean specifying whether an
         `object` was created.
         """
-        result = self[model].get(value)
+        result = self[model].get(value.lower())
         created = False
         if not result:
             kwargs[field] = value
             result = model.objects.create(**kwargs)
-            self[model][value] = result
+            self[model][value.lower()] = result
             created = True
         return result, created
 
@@ -72,12 +68,12 @@ def parse_data(sets_data, set_codes):
     # Load supertypes, types, and subtypes into memory
     cache = ModelCache()
     for model in [CardSupertype, CardType, CardSubtype]:
-        cache[model] = {obj.name: obj for obj in model.objects.all()}
+        cache[model] = {obj.name.lower(): obj for obj in model.objects.all()}
     # Load relevant sets into memory
     if set_codes is Everything:
-        cache[Set] = {obj.code: obj for obj in Set.objects.all()}
+        cache[Set] = {obj.code.lower(): obj for obj in Set.objects.all()}
     else:
-        cache[Set] = {obj.code: obj for obj in Set.objects.filter(code__in=set_codes)}
+        cache[Set] = {obj.code.lower(): obj for obj in Set.objects.filter(code__in=set_codes)}
 
     # Process the data set-by-set
     for code, data in sets_data.items():
@@ -132,9 +128,12 @@ def parse_data(sets_data, set_codes):
                 card.subtypes.add(subtype)
 
             # Printing info
-            artist_name = card_data['artist']
-            artist, _ = Artist.objects.get_or_create(full_name=artist_name)
-            multiverse_id = card_data.get('multiverseid', None)  # Missing on certain sets
+            artist_name = card_data.get('artist') # Missing on certain cards
+            if artist_name:
+                artist, _ = Artist.objects.get_or_create(full_name=artist_name)
+            else:
+                artist = None
+            multiverse_id = card_data.get('multiverseId', None)  # Missing on certain sets
             flavor_text = card_data.get('flavor', '')
             rarity = card_data['rarity']
             number = card_data.get('number', '')  # Absent on old sets
