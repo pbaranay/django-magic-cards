@@ -52,11 +52,17 @@ class Printing(models.Model):
 
     objects = PrintingQuerySet.as_manager()
 
-    card = models.ForeignKey('Card', related_name='printings')
-    set = models.ForeignKey('Set', related_name='printings')
+    card = models.ForeignKey('Card',
+                             on_delete=models.CASCADE,
+                             related_name='printings')
+    set = models.ForeignKey('Set',
+                            on_delete=models.CASCADE,
+                            related_name='printings')
     rarity = enum.EnumField(Rarity)
     flavor_text = models.TextField(blank=True)
-    artist = models.ForeignKey('Artist', related_name='printings')
+    artist = models.ForeignKey('Artist',
+                               on_delete=models.CASCADE,
+                               related_name='printings')
     number = models.CharField(max_length=7, blank=True)
     multiverse_id = models.PositiveIntegerField(blank=True, null=True)
 
