@@ -2,5 +2,5 @@ Django==1.11.3
 django-light-enums==0.1.6
 inflect==0.2.5
 pytz==2017.2
-requests==2.18.2
+requests==2.20.0
 six==1.10.0

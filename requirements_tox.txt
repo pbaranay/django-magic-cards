@@ -1,5 +1,5 @@
 django-light-enums==0.1.6
-requests==2.18.2
+requests==2.20.0
 six==1.10.0
 coverage==4.3.4
 mock>=1.0.1
