@@ -1,4 +1,4 @@
-Django==1.11.3
+Django==1.11.28
 django-light-enums==0.1.6
 inflect==0.2.5
 pytz==2017.2
